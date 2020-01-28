@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "108951701179",
+    "firebase_url": "https://handover-af49e.firebaseio.com",
+    "project_id": "handover-af49e",
+    "storage_bucket": "handover-af49e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108951701179:android:d036c8a3ac46d1d8f90b9e",
+        "android_client_info": {
+          "package_name": "com.example.handover_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "108951701179-jvu14ji4pnser0istqmnu5plhcd8roq9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhJjxA2oPVO4Gb8acrDwezxViRW9gAs1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "108951701179-jvu14ji4pnser0istqmnu5plhcd8roq9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "108951701179-66ndqakrv9ab6hao1ba20i0387j1ghsk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.handoverApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
