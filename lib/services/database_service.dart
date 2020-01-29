@@ -5,6 +5,7 @@ import 'package:handover_app/utilities/constants.dart';
 import 'package:handover_app/models/user_model.dart';
 
 class DatabaseService {
+  
   static void updateUser(User user) {
     usersRef.document(user.id).updateData({
       "name": user.name,

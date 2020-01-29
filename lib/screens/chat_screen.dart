@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:handover_app/models/message_model.dart';
@@ -43,43 +44,72 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0.4,
-        backgroundColor: Colors.white,
-        title: Text(
-          widget.receiver.name,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 32,
-          ),
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.videocam,
-              size: 40,
+          appBar: AppBar(
+            elevation: 0.4,
+            backgroundColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 42, 0, 0),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      CircleAvatar(
+                        radius: 25.0,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: widget.receiver.profileImageUrl.isEmpty
+                            ? AssetImage(
+                                'assets/images/default_profile_picture.png')
+                            : CachedNetworkImageProvider(
+                                widget.receiver.profileImageUrl),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(3, 0, 0, 0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              widget.receiver.name,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 30,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ),
-            onPressed: () {},
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.videocam,
+                  size: 40,
+                ),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.phone,
+                  size: 35,
+                ),
+                onPressed: () {},
+              )
+            ],
           ),
-          IconButton(
-            icon: Icon(
-              Icons.phone,
-              size: 35,
-            ),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          Flexible(
-            child: messageList(),
+          body: Column(
+            children: <Widget>[
+              Flexible(
+                child: messageList(),
+              ),
+              chatControls(),
+            ],
           ),
-          chatControls(),
-        ],
-      ),
-    );
+        );
   }
 
   Widget messageList() {
@@ -106,7 +136,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget chatMessageItem(DocumentSnapshot snapshot) {
-
     Message _message = Message.fromMap(snapshot.data);
 
     return Container(
@@ -147,10 +176,7 @@ class _ChatScreenState extends State<ChatScreen> {
   getMessage(Message message) {
     return Text(
       message.message,
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 20
-      ),
+      style: TextStyle(color: Colors.white, fontSize: 20),
     );
   }
 
@@ -169,10 +195,7 @@ class _ChatScreenState extends State<ChatScreen> {
           bottomLeft: messageRadius,
         ),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: getMessage(message)
-      ),
+      child: Padding(padding: EdgeInsets.all(10), child: getMessage(message)),
     );
   }
 
