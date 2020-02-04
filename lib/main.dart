@@ -19,7 +19,7 @@ class HandoverApp extends StatelessWidget {
           Provider.of<UserData>(context).currentUserId = snapshot.data.uid;
           return HomeScreen();
         } else {
-          return LoginScreen();
+          return SignupScreen();
         }
       },
     );
