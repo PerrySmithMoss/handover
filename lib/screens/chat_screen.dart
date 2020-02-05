@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/scheduler.dart';
 import 'package:handover_app/models/message_model.dart';
 import 'package:handover_app/models/user_model.dart';
 import 'package:handover_app/services/firebase_repository.dart';
@@ -20,11 +22,17 @@ class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textFieldController = TextEditingController();
   FirebaseRepository _repository = FirebaseRepository();
 
+  ScrollController _listScrollController = ScrollController();
+
   User sender;
 
   String _currentUserId;
 
+  FocusNode textFeildFocus = FocusNode();
+
   bool isWriting = false;
+
+  bool showEmojiPicker = false;
 
   @override
   void initState() {
@@ -41,75 +49,108 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  showKeyboard() => textFeildFocus.requestFocus();
+
+  hideKeuboard() => textFeildFocus.unfocus();
+
+  hideEmojiContainer() {
+    setState(() {
+      showEmojiPicker = false;
+    });
+  }
+
+  showEmojiContainer() {
+    setState(() {
+      showEmojiPicker = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-          appBar: AppBar(
-            elevation: 0.4,
-            backgroundColor: Colors.white,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 42, 0, 0),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      CircleAvatar(
-                        radius: 25.0,
-                        backgroundColor: Colors.grey,
-                        backgroundImage: widget.receiver.profileImageUrl.isEmpty
-                            ? AssetImage(
-                                'assets/images/default_profile_picture.png')
-                            : CachedNetworkImageProvider(
-                                widget.receiver.profileImageUrl),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(3, 0, 0, 0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              widget.receiver.name,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 30,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+      appBar: AppBar(
+        elevation: 0.4,
+        backgroundColor: Colors.white,
+        flexibleSpace: FlexibleSpaceBar(
+          centerTitle: true,
+          title: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 42, 0, 0),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  CircleAvatar(
+                    radius: 20.0,
+                    backgroundColor: Colors.grey,
+                    backgroundImage: widget.receiver.profileImageUrl.isEmpty
+                        ? AssetImage(
+                            'assets/images/default_profile_picture.png')
+                        : CachedNetworkImageProvider(
+                            widget.receiver.profileImageUrl),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(3, 0, 0, 0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          widget.receiver.name,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 30,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
               ),
             ),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.videocam,
-                  size: 40,
-                ),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.phone,
-                  size: 35,
-                ),
-                onPressed: () {},
-              )
-            ],
           ),
-          body: Column(
-            children: <Widget>[
-              Flexible(
-                child: messageList(),
-              ),
-              chatControls(),
-            ],
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.videocam,
+              size: 40,
+            ),
+            onPressed: () {},
           ),
-        );
+          IconButton(
+            icon: Icon(
+              Icons.phone,
+              size: 35,
+            ),
+            onPressed: () {},
+          )
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          Flexible(
+            child: messageList(),
+          ),
+          chatControls(),
+          showEmojiPicker ? Container(child: emojiContainer()) : Container(),
+        ],
+      ),
+    );
+  }
+
+  emojiContainer() {
+    return EmojiPicker(
+      bgColor: Colors.white,
+      indicatorColor: Colors.blue,
+      rows: 3,
+      columns: 7,
+      onEmojiSelected: (emoji, category) {
+        setState(() {
+          isWriting = true;
+        });
+
+        textFieldController.text = textFieldController.text + emoji.emoji;
+      },
+    );
   }
 
   Widget messageList() {
@@ -118,15 +159,29 @@ class _ChatScreenState extends State<ChatScreen> {
           .collection(MESSAGES_COLLECTION)
           .document(_currentUserId)
           .collection(widget.receiver.id)
-          .orderBy(TIMESTAMP_FIELD, descending: false)
+          .orderBy(TIMESTAMP_FIELD, descending: true)
           .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.data == null) {
           return Center(child: CircularProgressIndicator());
         }
+
+        // When user types a message the screen will revert back
+        // to the most recent message
+
+        // SchedulerBinding.instance.addPostFrameCallback((_) {
+        //   _listScrollController.animateTo(
+        //     _listScrollController.position.minScrollExtent,
+        //     duration: Duration(milliseconds: 250),
+        //     curve: Curves.easeInOut,
+        //     );
+        // });
+
         return ListView.builder(
           padding: EdgeInsets.all(10),
           itemCount: snapshot.data.documents.length,
+          reverse: true,
+          controller: _listScrollController,
           itemBuilder: (context, index) {
             return chatMessageItem(snapshot.data.documents[index]);
           },
@@ -315,38 +370,54 @@ class _ChatScreenState extends State<ChatScreen> {
           width: 5,
         ),
         Expanded(
-          child: TextField(
-            controller: textFieldController,
-            style: TextStyle(
-              color: Colors.black,
-            ),
-            onChanged: (value) {
-              (value.length > 0 && value.trim() != "")
-                  ? setWritingTo(true)
-                  : setWritingTo(false);
-            },
-            decoration: InputDecoration(
-                hintText: "Type a message",
-                hintStyle: TextStyle(
+          child: Stack(
+            alignment: Alignment.centerRight,
+            children: [
+              TextField(
+                controller: textFieldController,
+                focusNode: textFeildFocus,
+                onTap: () => hideEmojiContainer(),
+                style: TextStyle(
                   color: Colors.black,
                 ),
-                border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.all(
-                      const Radius.circular(50),
-                    ),
-                    borderSide: BorderSide.none),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                filled: true,
-                fillColor: Colors.white,
-                suffixIcon: GestureDetector(
-                  onTap: () {},
-                  child: Icon(
-                    Icons.face,
+                onChanged: (value) {
+                  (value.length > 0 && value.trim() != "")
+                      ? setWritingTo(true)
+                      : setWritingTo(false);
+                },
+                decoration: InputDecoration(
+                  hintText: "Type a message",
+                  hintStyle: TextStyle(
                     color: Colors.black,
-                    size: 32,
                   ),
-                )),
+                  border: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(
+                        const Radius.circular(50),
+                      ),
+                      borderSide: BorderSide.none),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+              IconButton(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onPressed: () {
+                  if (!showEmojiPicker) {
+                    // keyboard is visable
+                    hideKeuboard();
+                    showEmojiContainer();
+                  } else {
+                    //keyboard is hidden
+                    showKeyboard();
+                    hideEmojiContainer();
+                  }
+                },
+                icon: Icon(Icons.face, size: 32,),
+              ),
+            ],
           ),
         ),
         isWriting
