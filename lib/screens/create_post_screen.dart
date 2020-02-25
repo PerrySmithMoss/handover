@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handover_app/models/post_model.dart';
-import 'package:handover_app/models/user_data.dart';
+import 'package:handover_app/provider/user_data.dart';
 import 'package:handover_app/services/database_service.dart';
 import 'package:handover_app/services/storage_services.dart';
 import 'package:image_cropper/image_cropper.dart';

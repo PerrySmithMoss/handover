@@ -4,14 +4,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:handover_app/enum/view_state.dart';
 // import 'package:flutter/scheduler.dart';
 import 'package:handover_app/models/message_model.dart';
 import 'package:handover_app/models/user_model.dart';
+import 'package:handover_app/provider/image_upload_provider.dart';
 import 'package:handover_app/services/firebase_repository.dart';
 import 'package:handover_app/utils/utilities.dart';
+import 'package:handover_app/widgets/cached_image.dart';
 import 'package:handover_app/widgets/custom_tile.dart';
 import 'package:handover_app/utils/constants.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final User receiver;
@@ -28,6 +32,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   ScrollController _listScrollController = ScrollController();
 
+  ImageUploadProvider _imageUploadProvider;
+
   User sender;
 
   String _currentUserId;
@@ -37,7 +43,6 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isWriting = false;
 
   bool showEmojiPicker = false;
-
 
   @override
   void initState() {
@@ -72,6 +77,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _imageUploadProvider = Provider.of<ImageUploadProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.4,
@@ -135,6 +142,13 @@ class _ChatScreenState extends State<ChatScreen> {
           Flexible(
             child: messageList(),
           ),
+          _imageUploadProvider.getViewState == ViewState.LOADING
+              ? Container(
+                  alignment: Alignment.centerRight,
+                  margin: EdgeInsets.only(right: 15),
+                  child: CircularProgressIndicator(),
+                )
+              : Container(),
           chatControls(),
           showEmojiPicker ? Container(child: emojiContainer()) : Container(),
         ],
@@ -232,11 +246,44 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  getMessage(Message message) {
-    return Text(
-      message.message,
-      style: TextStyle(color: Colors.white, fontSize: 20),
+  sendMessage() {
+    var text = textFieldController.text;
+
+    Message _message = Message(
+      receiverId: widget.receiver.id,
+      senderId: sender.id,
+      message: text,
+      timestamp: Timestamp.now(),
+      type: 'text',
     );
+
+    setState(() {
+      isWriting = false;
+    });
+
+    textFieldController.text = "";
+
+    _repository.addMessageToDb(_message, sender, widget.receiver);
+  }
+
+  void pickImage({@required ImageSource source}) async {
+    File selectedImage = await Utils.pickImage(source: source);
+    _repository.uploadImage(
+        image: selectedImage,
+        receiverId: widget.receiver.id,
+        senderId: _currentUserId,
+        imageUploadProvider: _imageUploadProvider);
+  }
+
+  getMessage(Message message) {
+    return message.type != MESSAGE_TYPE_IMAGE
+        ? Text(
+            message.message,
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          )
+        : message.photoUrl != null
+            ? CachedImage(url: message.photoUrl)
+            : Text("Url was null");
   }
 
   Widget receiverLayout(Message message) {
@@ -306,6 +353,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         title: "Media",
                         subtitle: "Share Photos and Video",
                         icon: Icons.image,
+                        onTap: () => pickImage(source: ImageSource.gallery),
                       ),
                       ModalTile(
                           title: "File",
@@ -333,36 +381,6 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             );
           });
-    }
-
-    sendMessage() {
-      var text = textFieldController.text;
-
-      Message _message = Message(
-        receiverId: widget.receiver.id,
-        senderId: sender.id,
-        message: text,
-        timestamp: Timestamp.now(),
-        type: 'text',
-      );
-
-      setState(() {
-        isWriting = false;
-      });
-
-      textFieldController.text = "";
-
-      _repository.addMessageToDb(_message, sender, widget.receiver);
-    }
-
-    void pickImage({@required ImageSource source}) async {
-      File selectedImage = await Utils.pickImage(source: source);
-      _repository.uploadImage(
-        image: selectedImage,
-        receiverId: widget.receiver.id,
-        senderId: _currentUserId, 
-        imageUploadProvider: null
-      );
     }
 
     return Container(
@@ -429,7 +447,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     hideEmojiContainer();
                   }
                 },
-                icon: Icon(Icons.face, size: 32,),
+                icon: Icon(
+                  Icons.face,
+                  size: 32,
+                ),
               ),
             ],
           ),
@@ -446,12 +467,12 @@ class _ChatScreenState extends State<ChatScreen> {
         isWriting
             ? Container()
             : GestureDetector(
-              onTap: () => pickImage(source: ImageSource.camera),
-                          child: Icon(
+                onTap: () => pickImage(source: ImageSource.camera),
+                child: Icon(
                   Icons.camera_alt,
                   size: 32,
                 ),
-            ),
+              ),
         isWriting
             ? Container(
                 margin: EdgeInsets.only(left: 10),
@@ -473,11 +494,13 @@ class ModalTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
+  final Function onTap;
 
   const ModalTile({
     @required this.title,
     @required this.subtitle,
     @required this.icon,
+    this.onTap,
   });
 
   @override
@@ -485,6 +508,7 @@ class ModalTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: CustomTile(
+        onTap: onTap,
         mini: false,
         leading: Container(
           margin: EdgeInsets.only(right: 10),

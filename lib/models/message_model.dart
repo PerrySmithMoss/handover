@@ -8,10 +8,21 @@ class Message {
   Timestamp timestamp;
   String photoUrl;
 
-  Message({this.senderId, this.receiverId, this.type, this.message, this.timestamp});
+  Message(
+      {this.senderId,
+      this.receiverId,
+      this.type,
+      this.message,
+      this.timestamp});
 
   //Will be only called when you wish to send an image
-  Message.imageMessage({this.senderId, this.receiverId, this.message, this.type, this.timestamp, this.photoUrl});
+  Message.imageMessage(
+      {this.senderId,
+      this.receiverId,
+      this.message,
+      this.type,
+      this.timestamp,
+      this.photoUrl});
 
   Map toMap() {
     var map = Map<String, dynamic>();
@@ -30,7 +41,7 @@ class Message {
     map['type'] = this.type;
     map['message'] = this.message;
     map['timestamp'] = this.timestamp;
-    map['photo_url'] = this.photoUrl;
+    map['photoUrl'] = this.photoUrl;
     return map;
   }
 
@@ -40,7 +51,6 @@ class Message {
     this..type = map['type'];
     this..message = map['message'];
     this.timestamp = map['timestamp'];
+    this.photoUrl = map['photoUrl'];
   }
-
-
 }

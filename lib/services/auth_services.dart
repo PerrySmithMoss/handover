@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
-import 'package:handover_app/models/user_data.dart';
+import 'package:handover_app/provider/user_data.dart';
 import 'package:provider/provider.dart';
 
 class AuthService {

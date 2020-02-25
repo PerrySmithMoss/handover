@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:handover_app/models/user_data.dart';
+import 'package:handover_app/provider/user_data.dart';
 import 'package:handover_app/screens/activity_screen.dart';
 import 'package:handover_app/screens/create_post_screen.dart';
 import 'package:handover_app/screens/feed_screen.dart';

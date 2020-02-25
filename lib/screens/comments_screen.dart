@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:handover_app/models/comment_model.dart';
 import 'package:handover_app/models/post_model.dart';
-import 'package:handover_app/models/user_data.dart';
+import 'package:handover_app/provider/user_data.dart';
 import 'package:handover_app/models/user_model.dart';
 import 'package:handover_app/services/database_service.dart';
 import 'package:handover_app/utils/constants.dart';
