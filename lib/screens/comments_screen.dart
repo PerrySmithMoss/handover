@@ -5,7 +5,7 @@ import 'package:handover_app/models/post_model.dart';
 import 'package:handover_app/models/user_data.dart';
 import 'package:handover_app/models/user_model.dart';
 import 'package:handover_app/services/database_service.dart';
-import 'package:handover_app/utilities/constants.dart';
+import 'package:handover_app/utils/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 

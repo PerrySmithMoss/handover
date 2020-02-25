@@ -7,10 +7,9 @@ import 'package:handover_app/screens/edit_profile_screen.dart';
 import 'package:handover_app/screens/chat_screen.dart';
 import 'package:handover_app/services/auth_services.dart';
 import 'package:handover_app/services/database_service.dart';
-import 'package:handover_app/utilities/constants.dart';
+import 'package:handover_app/utils/constants.dart';
 import 'package:handover_app/widgets/post_view.dart';
 import 'package:provider/provider.dart';
-
 import 'comments_screen.dart';
 
 class ProfileScreen extends StatefulWidget {

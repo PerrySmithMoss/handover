@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:handover_app/utilities/constants.dart';
+import 'package:handover_app/utils/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';

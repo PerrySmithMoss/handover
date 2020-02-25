@@ -1,0 +1,6 @@
+enum ViewState {
+  
+  LOADING, 
+  IDLE,
+
+}

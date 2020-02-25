@@ -5,6 +5,7 @@ import 'package:handover_app/screens/activity_screen.dart';
 import 'package:handover_app/screens/create_post_screen.dart';
 import 'package:handover_app/screens/feed_screen.dart';
 import 'package:handover_app/screens/messages_screen.dart';
+import 'package:handover_app/screens/patients_screen.dart';
 import 'package:handover_app/screens/profile_screen.dart';
 import 'package:handover_app/screens/search_screen.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           FeedScreen(currentUserId: currentUserId),
           MessagesScreen(),
+          PatientsScreen(userId: currentUserId),
           SearchScreen(),
           CreatePostScreen(),
           ActivityScreen(currentUserId: currentUserId),
@@ -63,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home,size: 32)),
           BottomNavigationBarItem(icon: Icon(Icons.email, size: 32)),
+          BottomNavigationBarItem(icon: Icon(Icons.list, size: 40)),
           BottomNavigationBarItem(icon: Icon(Icons.search, size: 32)),
           BottomNavigationBarItem(icon: Icon(Icons.photo_camera, size: 32)),
           BottomNavigationBarItem(icon: Icon(Icons.notifications, size: 32)),

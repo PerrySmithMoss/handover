@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
@@ -6,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:handover_app/models/message_model.dart';
 import 'package:handover_app/models/user_model.dart';
 import 'package:handover_app/services/firebase_repository.dart';
+import 'package:handover_app/utils/utilities.dart';
 import 'package:handover_app/widgets/custom_tile.dart';
-import 'package:handover_app/utilities/constants.dart';
+import 'package:handover_app/utils/constants.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatScreen extends StatefulWidget {
   final User receiver;
@@ -33,6 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isWriting = false;
 
   bool showEmojiPicker = false;
+
 
   @override
   void initState() {
@@ -168,7 +173,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
         // When user types a message the screen will revert back
         // to the most recent message
-
         // SchedulerBinding.instance.addPostFrameCallback((_) {
         //   _listScrollController.animateTo(
         //     _listScrollController.position.minScrollExtent,
@@ -351,6 +355,16 @@ class _ChatScreenState extends State<ChatScreen> {
       _repository.addMessageToDb(_message, sender, widget.receiver);
     }
 
+    void pickImage({@required ImageSource source}) async {
+      File selectedImage = await Utils.pickImage(source: source);
+      _repository.uploadImage(
+        image: selectedImage,
+        receiverId: widget.receiver.id,
+        senderId: _currentUserId, 
+        imageUploadProvider: null
+      );
+    }
+
     return Container(
       padding: EdgeInsets.all(10),
       child: Row(children: <Widget>[
@@ -431,10 +445,13 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
         isWriting
             ? Container()
-            : Icon(
-                Icons.camera_alt,
-                size: 32,
-              ),
+            : GestureDetector(
+              onTap: () => pickImage(source: ImageSource.camera),
+                          child: Icon(
+                  Icons.camera_alt,
+                  size: 32,
+                ),
+            ),
         isWriting
             ? Container(
                 margin: EdgeInsets.only(left: 10),

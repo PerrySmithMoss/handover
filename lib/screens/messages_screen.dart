@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:handover_app/services/firebase_repository.dart';
-import 'package:handover_app/utilities/get_username.dart';
+import 'package:handover_app/utils/utilities.dart';
 import 'package:handover_app/widgets/custom_tile.dart';
 
 class MessagesScreen extends StatefulWidget {
@@ -12,7 +12,6 @@ class MessagesScreen extends StatefulWidget {
 final FirebaseRepository _repository = FirebaseRepository();
 
 class _MessagesScreenState extends State<MessagesScreen> {
-
   String currentUserId;
   String initials = "";
 
@@ -28,51 +27,58 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(child: Icon(Icons.edit), onPressed: () {},),
-      body: ChatListContainer(currentUserId),
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0.4,
-        backgroundColor: Colors.white,
-        title: Text(
-          'Messages',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 32, 
-          ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.edit),
+          onPressed: () {},
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search, size: 30,),
-            onPressed: () {},
-          ), 
-          IconButton(
-            icon: Icon(Icons.group, size: 30,),
-            onPressed: () {},
-          )
-  
-        ],
-      )
-      );
+        body: ChatListContainer(currentUserId),
+        appBar: AppBar(
+          centerTitle: true,
+          elevation: 0.4,
+          backgroundColor: Colors.white,
+          title: Text(
+            'Messages',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 32,
+            ),
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.search,
+                size: 30,
+              ),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.group,
+                size: 30,
+              ),
+              onPressed: () {},
+            )
+          ],
+        ));
+  }
 }
+
+class ChatListContainer extends StatefulWidget {
+  final String currentUserId;
+
+  ChatListContainer(this.currentUserId);
+
+  @override
+  _ChatListContainerState createState() => _ChatListContainerState();
 }
- class ChatListContainer extends StatefulWidget {
 
-   final String currentUserId;
-
-   ChatListContainer(this.currentUserId);
-
-   @override
-   _ChatListContainerState createState() => _ChatListContainerState();
- }
- 
- class _ChatListContainerState extends State<ChatListContainer> {
-   @override
-   Widget build(BuildContext context) {
-     return Container(
-       child: ListView.builder(
+class _ChatListContainerState extends State<ChatListContainer> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: ListView.builder(
         padding: EdgeInsets.all(10),
         itemCount: 2,
         itemBuilder: (context, index) {
@@ -108,8 +114,7 @@ Widget build(BuildContext context) {
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.green,
-                          border: Border.all(
-                              color: Colors.black, width: 2)),
+                          border: Border.all(color: Colors.black, width: 2)),
                     ),
                   )
                 ],

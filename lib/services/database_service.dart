@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:handover_app/models/activity_model.dart';
 import 'package:handover_app/models/post_model.dart';
-import 'package:handover_app/utilities/constants.dart';
+import 'package:handover_app/utils/constants.dart';
 import 'package:handover_app/models/user_model.dart';
 
 class DatabaseService {
