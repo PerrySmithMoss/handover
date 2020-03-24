@@ -1,47 +1,52 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:handover_app/models/patient_model.dart';
 
-class AddPatient extends StatefulWidget {
+class EditPatient extends StatefulWidget {
+  final Patient patient;
+
+  EditPatient({Key key, @required this.patient}) : super(key: key);
+
   @override
-  _AddPatientState createState() => _AddPatientState();
+  _EditPatientState createState() => _EditPatientState();
 }
 
-class _AddPatientState extends State<AddPatient> {
+class _EditPatientState extends State<EditPatient> {
+
+  void initState() {
+    super.initState();
+      // add a timestamp controller, variable and textformfeild.
+      _nameController.text = widget.patient.name;
+      _dateController.text = widget.patient.dob;
+      _currentGenderSelected = widget.patient.gender;
+      _ageController.text = widget.patient.age;
+      _notesController.text = widget.patient.notes;
+      _name = widget.patient.name;
+      _age = widget.patient.age;
+      _dob = widget.patient.dob;
+      _gender = widget.patient.gender;
+      _currentGenderSelected = widget.patient.gender;
+      _notes = widget.patient.notes;
+      
+  }
   final db = Firestore.instance;
 
   final _formKey = GlobalKey<FormState>();
-  String _name, _age, _dob, _gender, _notes;
-  DateTime selectedDate = DateTime.now();
-  TextEditingController _date = TextEditingController();
+  var _name, _age, _dob, _gender, _notes, _currentGenderSelected;
 
-  var _currentGenderSelected;
+  DateTime selectedDate = DateTime.now();
+  TextEditingController _dateController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _ageController = TextEditingController();
+  TextEditingController _notesController = TextEditingController();
+
   List<String> _genders = <String>['Male', 'Female', 'Other'];
 
-  Future<String>getCurrentUser() async {
+  Future<String> getCurrentUser() async {
     final FirebaseUser user = await FirebaseAuth.instance.currentUser();
     final String uid = user.uid.toString();
     return uid;
-  }
-
-// add user's patient to firebase
-  void _submit() async {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-      await db
-          .collection("patients")
-          .document(await getCurrentUser())
-          .collection("Patients")
-          .add({
-        'Patient name': _name,
-        'Age': _age,
-        'Date of Birth': _dob,
-        'Gender': _gender,
-        'Notes': _notes,
-        // "Timestamp": Timestamp.fromDate(DateTime.now())
-      });
-    }
-    Navigator.pop(context);
   }
 
   Future<Null> selectDate(BuildContext context) async {
@@ -53,7 +58,7 @@ class _AddPatientState extends State<AddPatient> {
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
-        _date.value = TextEditingValue(text: picked.toString().split(" ")[0]);
+        _dateController.value = TextEditingValue(text: picked.toString().split(" ")[0]);
       });
   }
 
@@ -63,7 +68,7 @@ class _AddPatientState extends State<AddPatient> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          "Add Patient",
+          "Edit Patient",
           style: TextStyle(
             color: Colors.black,
             fontSize: 32,
@@ -81,12 +86,14 @@ class _AddPatientState extends State<AddPatient> {
                 padding: EdgeInsets.all(.2),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    labelText: "Name",
+                    
+                    labelText: _name,
                     icon: Icon(Icons.person),
                   ),
                   validator: (input) =>
                       input.trim().isEmpty ? 'Please enter a valid name' : null,
                   onSaved: (input) => _name = input,
+                  controller: _nameController,
                 ),
               ),
               Padding(
@@ -99,10 +106,10 @@ class _AddPatientState extends State<AddPatient> {
                           ? 'Please enter a valid Date of Birth'
                           : null,
                       onSaved: (input) => _dob = input,
-                      controller: _date,
+                      controller: _dateController,
                       keyboardType: TextInputType.datetime,
                       decoration: InputDecoration(
-                          hintText: 'Date of Birth',
+                          hintText: _dob,
                           icon: Icon(
                             Icons.calendar_today,
                             size: 22,
@@ -119,7 +126,8 @@ class _AddPatientState extends State<AddPatient> {
                         : null,
                     onSaved: (input) => _gender = input,
                     decoration: InputDecoration(
-                        labelText: "Gender", icon: Icon(Icons.person_add)),
+                        labelText: _gender,
+                        icon: Icon(Icons.person_add)),
                     items: _genders
                         .map((value) => DropdownMenuItem(
                               child: Text(
@@ -142,8 +150,10 @@ class _AddPatientState extends State<AddPatient> {
                   validator: (input) =>
                       input.trim().isEmpty ? 'Please enter a valid age' : null,
                   onSaved: (input) => _age = input,
+                  controller: _ageController,
                   decoration: InputDecoration(
-                      labelText: "Age", icon: Icon(Icons.date_range)),
+                      labelText: _age,
+                      icon: Icon(Icons.date_range)),
                 ),
               ),
               Padding(
@@ -151,8 +161,10 @@ class _AddPatientState extends State<AddPatient> {
                 child: TextFormField(
                   maxLength: 300,
                   onSaved: (input) => _notes = input,
+                  controller: _notesController,
                   decoration: InputDecoration(
-                      labelText: "Notes", icon: Icon(Icons.note_add)),
+                      labelText: _notes,
+                      icon: Icon(Icons.note_add)),
                 ),
               ),
               Row(
@@ -169,10 +181,37 @@ class _AddPatientState extends State<AddPatient> {
                   RaisedButton(
                     color: Colors.blue,
                     child: Text(
-                      "Submit",
+                      "Update",
                       style: TextStyle(color: Colors.white),
                     ),
-                    onPressed: _submit,
+                    onPressed:  
+                      () async {
+                        widget.patient.name = (_nameController.text);
+                        widget.patient.dob = (_dateController.text);
+                        // widget.patient.gender = .text;
+                        widget.patient.age = (_ageController.text);
+                        widget.patient.notes = (_notesController.text);
+                        setState(() {
+                          _name = widget.patient.name;
+                          _dob = widget.patient.dob;
+                          _gender = widget.patient.gender;
+                          _age = widget.patient.age;
+                          _notes = widget.patient.notes;
+                        });
+                        await updatePatient(context);
+                        Navigator.of(context).pop();
+                      }
+                  ),
+                  RaisedButton(
+                    color: Colors.red,
+                    child: Text(
+                      "Remove",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () async {
+                      await deletePatient(context);
+                      Navigator.of(context).pop();
+                    }
                   ),
                 ],
               )
@@ -181,5 +220,26 @@ class _AddPatientState extends State<AddPatient> {
         ),
       ),
     );
+  }
+
+  Future updatePatient(context) async {
+    var uid = await getCurrentUser();
+    final patient = Firestore.instance
+        .collection("patients")
+        .document(uid)
+        .collection("Patients")
+        .document(widget.patient.patientId);
+        return await patient.setData(widget.patient.toJson());
+  }
+
+    Future deletePatient(context) async {
+    var uid = await getCurrentUser();
+    final patient = Firestore.instance
+        .collection("patients")
+        .document(uid)
+        .collection("Patients")
+        .document(widget.patient.patientId);
+
+        return await patient.delete();
   }
 }

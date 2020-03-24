@@ -104,7 +104,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   Container(
         width: double.infinity,
-        height: ScreenUtil.getInstance().setHeight(633),
+        height: ScreenUtil.getInstance().setHeight(550),
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8.0),
@@ -179,7 +179,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   obscureText: true,
                 ),
                 SizedBox(
-                  height: ScreenUtil.getInstance().setHeight(50),
+                  height: ScreenUtil.getInstance().setHeight(40),
                 ),
               ],
             ),

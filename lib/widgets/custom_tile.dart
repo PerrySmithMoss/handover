@@ -26,8 +26,7 @@ class CustomTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      onLongPress: onLongPress,
+      onTap: (){},
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: mini ? 10 : 0),
         margin: margin,

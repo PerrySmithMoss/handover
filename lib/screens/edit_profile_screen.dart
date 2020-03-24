@@ -149,10 +149,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     decoration: InputDecoration(
                       icon: Icon(Icons.book, size: 30),
-                      labelText: "Bio",
+                      labelText: "Job Title",
                     ),
                     validator: (input) => input.trim().length > 150
-                        ? "Bio must be less than 150 characters"
+                        ? "Your job title must be less than 150 characters"
                         : null,
                     onSaved: (input) => _bio = input,
                   ),

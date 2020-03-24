@@ -2,11 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:handover_app/models/patient_model.dart';
 import 'package:handover_app/models/user_model.dart';
 import 'package:handover_app/screens/add_patient.dart';
+import 'package:handover_app/screens/edit_patient.dart';
 import 'package:handover_app/services/database_service.dart';
 import 'package:handover_app/utils/constants.dart';
-import 'package:handover_app/widgets/patientCard.dart';
 
 class PatientsScreen extends StatefulWidget {
   final String userId;
@@ -20,7 +21,7 @@ class PatientsScreen extends StatefulWidget {
 class _PatientsScreenState extends State<PatientsScreen> {
   TextEditingController _searchController = TextEditingController();
   Future<QuerySnapshot> _users;
-
+  
   _clearSearch() {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _searchController.clear());
@@ -42,7 +43,7 @@ class _PatientsScreenState extends State<PatientsScreen> {
         .collection('patients')
         .document(uid)
         .collection('Patients')
-        .orderBy('Timestamp', descending: true)
+        // .orderBy('Timestamp', descending: true)
         .snapshots();
   }
 
@@ -163,4 +164,49 @@ class _PatientsScreenState extends State<PatientsScreen> {
       ),
     );
   }
+  Widget buildPatientCard(BuildContext context, DocumentSnapshot document) {
+  final patient = Patient.fromSnapshot(document);
+    return new Container(
+      child: Card(
+        child: InkWell(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => EditPatient(patient: patient)));
+          },
+                  child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                  child: Row(children: <Widget>[
+                    Text(patient.name, style: new TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+                    Spacer(),
+                    Text(patient.gender, style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                    Text(", ", style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                    Text(patient.age, style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))
+                  ]),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 80.0),
+                  child: Row(children: <Widget>[
+                    Text(
+                        patient.dob, style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                    Spacer(),
+                  ]),
+                ),
+                   Row(
+                    children: <Widget>[
+                      Text(patient.notes, style: new TextStyle(fontSize: 16.0),),
+                      Spacer(),
+                      Icon(Icons.person),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
 }

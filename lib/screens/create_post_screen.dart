@@ -137,7 +137,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          "Create Post",
+          "Add Patient Photo",
           style: TextStyle(
             color: Colors.black,
             fontSize: 32

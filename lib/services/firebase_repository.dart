@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:handover_app/models/message_model.dart';
+import 'package:handover_app/models/user.dart';
 import 'package:handover_app/models/user_model.dart';
 import 'package:handover_app/provider/image_upload_provider.dart';
 import 'package:handover_app/services/firebase_methods.dart';
@@ -17,6 +18,12 @@ class FirebaseRepository {
 
   Future<String> uploadImageToStorage(File imageFile) =>
       _firebaseMethods.uploadImageToStorage(imageFile);
+
+  Future<List<UserUpdated>> fetchAllUsers(FirebaseUser user) => _firebaseMethods.fetchAllUsers(user);
+
+  Future<UserUpdated> fetchUserDetailsById(String uid) => _firebaseMethods.fetchUserDetailsById(uid);
+
+  Future<User> getUserWithId(String userId) => _firebaseMethods.getUserWithId(userId);
 
   // void showLoading(String receiverId, String senderId) =>
   //     _firebaseMethods.showLoading(receiverId, senderId);
@@ -34,4 +41,6 @@ class FirebaseRepository {
     @required ImageUploadProvider imageUploadProvider
   }) =>
       _firebaseMethods.uploadImage(image, receiverId, senderId, imageUploadProvider);
+
+
 }

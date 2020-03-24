@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:handover_app/models/user_model.dart';
 import 'package:handover_app/provider/user_data.dart';
 import 'package:handover_app/screens/activity_screen.dart';
 import 'package:handover_app/screens/create_post_screen.dart';
 import 'package:handover_app/screens/feed_screen.dart';
-import 'package:handover_app/screens/messages_screen.dart';
 import 'package:handover_app/screens/patients_screen.dart';
 import 'package:handover_app/screens/profile_screen.dart';
 import 'package:handover_app/screens/search_screen.dart';
@@ -12,11 +12,17 @@ import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
 
+  final String currentUserId;
+
+  HomeScreen({this.currentUserId});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  User user;
   int _currentTab = 0;
   PageController _pageController;
 
@@ -34,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: _pageController,
         children: <Widget>[
           FeedScreen(currentUserId: currentUserId),
-          MessagesScreen(),
           PatientsScreen(userId: currentUserId),
           SearchScreen(),
           CreatePostScreen(),
@@ -64,7 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
         activeColor: Colors.black,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home,size: 32)),
-          BottomNavigationBarItem(icon: Icon(Icons.email, size: 32)),
           BottomNavigationBarItem(icon: Icon(Icons.list, size: 40)),
           BottomNavigationBarItem(icon: Icon(Icons.search, size: 32)),
           BottomNavigationBarItem(icon: Icon(Icons.photo_camera, size: 32)),

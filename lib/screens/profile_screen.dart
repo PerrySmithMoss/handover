@@ -153,7 +153,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 MaterialPageRoute(
                                     builder: (context) => ChatScreen(
                                       receiver: user,
-                                    )));
+                                      receiverUid: widget.currentUserId,
+                                    )
+                                    ));
                           },
                           color: _isFollowing ? Colors.grey[200] : Colors.blue,
                           textColor: _isFollowing ? Colors.black : Colors.white,
@@ -196,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                             Text(
-                              'posts',
+                              'patients',
                               style: TextStyle(color: Colors.black54),
                             ),
                           ],
@@ -211,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                             Text(
-                              'followers',
+                              'colleagues',
                               style: TextStyle(color: Colors.black54),
                             ),
                           ],

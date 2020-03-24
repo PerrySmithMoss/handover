@@ -9,6 +9,7 @@ import 'package:handover_app/enum/view_state.dart';
 import 'package:handover_app/models/message_model.dart';
 import 'package:handover_app/models/user_model.dart';
 import 'package:handover_app/provider/image_upload_provider.dart';
+import 'package:handover_app/services/database_service.dart';
 import 'package:handover_app/services/firebase_repository.dart';
 import 'package:handover_app/utils/utilities.dart';
 import 'package:handover_app/widgets/cached_image.dart';
@@ -18,9 +19,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
+  final String profileImageUrl;
+  final String name;
+  final String receiverUid;
+  final User sender;
   final User receiver;
+  final String userId;
 
-  ChatScreen({this.receiver});
+  ChatScreen(
+      {this.profileImageUrl,
+      this.name,
+      this.receiverUid,
+      this.sender,
+      this.receiver,
+      this.userId});
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -32,9 +44,17 @@ class _ChatScreenState extends State<ChatScreen> {
 
   ScrollController _listScrollController = ScrollController();
 
+  String receiverPhotoUrl,
+      senderPhotoUrl,
+      receiverName,
+      senderName,
+      profileImageUrl;
+
   ImageUploadProvider _imageUploadProvider;
 
   User sender;
+
+  User receiver;
 
   String _currentUserId;
 
@@ -44,18 +64,49 @@ class _ChatScreenState extends State<ChatScreen> {
 
   bool showEmojiPicker = false;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   print("RCID : ${widget.receiverUid}");
+  //   _repository.getCurrentUser().then((user) {
+  //     setState(() {
+  //       _senderuid = user.uid;
+  //     });
+  //     _repository.fetchUserDetailsById(_senderuid).then((user) {
+  //       setState(() {
+  //         senderPhotoUrl = user.profileImageUrl;
+  //         senderName = user.name;
+  //       });
+  //     });
+  //     _repository.fetchUserDetailsById(widget.receiverUid).then((user) {
+  //       setState(() {
+  //         receiverPhotoUrl = user.profileImageUrl;
+  //         receiverName = user.name;
+  //       });
+  //     });
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
+
     _repository.getCurrentUser().then((user) {
       _currentUserId = user.uid;
-
       setState(() {
         sender = User(
             id: user.uid,
             name: user.displayName,
             profileImageUrl: user.photoUrl);
       });
+    });
+    _setupProfileUser();
+  }
+
+  _setupProfileUser() async {
+    User profileUser = await DatabaseService.getUserWithId(widget.userId);
+    setState(() {
+      receiver = profileUser;
     });
   }
 
@@ -78,7 +129,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     _imageUploadProvider = Provider.of<ImageUploadProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0.4,
@@ -92,14 +142,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   CircleAvatar(
-                    radius: 20.0,
-                    backgroundColor: Colors.grey,
-                    backgroundImage: widget.receiver.profileImageUrl.isEmpty
-                        ? AssetImage(
-                            'assets/images/default_profile_picture.png')
-                        : CachedNetworkImageProvider(
-                            widget.receiver.profileImageUrl),
-                  ),
+                      radius: 20.0,
+                      backgroundColor: Colors.grey,
+                      backgroundImage: widget.receiver.profileImageUrl.isEmpty
+                          ? AssetImage(
+                              'assets/images/default_profile_picture.png')
+                          : CachedNetworkImageProvider(
+                              widget.receiver.profileImageUrl)),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(3, 0, 0, 0),
                     child: Column(
