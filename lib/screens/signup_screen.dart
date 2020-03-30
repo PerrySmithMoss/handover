@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:handover_app/screens/login_screen.dart';
 import 'package:handover_app/services/auth_services.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 
 class SignupScreen extends StatefulWidget {
 
@@ -17,11 +18,11 @@ class _SignupScreenState extends State<SignupScreen> {
   String _name, _email, _password;
   bool _isSelected = false;
 
-  // Signing in the user with Firebase
-  _submit() {
+  // Signing up the user with Firebase and generating them a unique key that will be used for encryption
+  _submit() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      AuthService.signUpUser(context, _name, _email, _password);
+      AuthService.signUpUser(context, _name, _email, _password, await _generateDESKey());
     }
   }
 
@@ -29,6 +30,13 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       _isSelected = !_isSelected;
     });
+  }
+
+  // generating the user a key, which will be used for encryption
+  _generateDESKey() async {
+    var key = await FlutterAesEcbPkcs5.generateDesKey(128);
+    String userKey = key;
+    return userKey;
   }
 
   Widget radioButton(bool isSelected) => Container(

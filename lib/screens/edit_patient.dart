@@ -239,7 +239,6 @@ class _EditPatientState extends State<EditPatient> {
         .document(uid)
         .collection("Patients")
         .document(widget.patient.patientId);
-
         return await patient.delete();
   }
 }

@@ -10,7 +10,7 @@ class AuthService {
   static final _firestore = Firestore.instance;  
 
   static void signUpUser(
-    BuildContext context, String name, String email, String password) async {
+    BuildContext context, String name, String email, String password, String userKey) async {
     try {
       AuthResult authResult = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -23,6 +23,7 @@ class AuthService {
           "name": name,
           "email": email,
           "profileImageUrl": "",
+          "userKey": userKey,
         });
         Provider.of<UserData>(context, listen: false).currentUserId = signedInUser.uid;
         Navigator.pop(context);

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 import 'package:handover_app/models/patient_model.dart';
 import 'package:handover_app/models/user_model.dart';
 import 'package:handover_app/screens/add_patient.dart';
@@ -21,7 +22,7 @@ class PatientsScreen extends StatefulWidget {
 class _PatientsScreenState extends State<PatientsScreen> {
   TextEditingController _searchController = TextEditingController();
   Future<QuerySnapshot> _users;
-  
+
   _clearSearch() {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _searchController.clear());
@@ -30,10 +31,19 @@ class _PatientsScreenState extends State<PatientsScreen> {
     });
   }
 
-  Future<String> getCurrentUser() async {
+  getCurrentUser() async {
     final FirebaseUser user = await FirebaseAuth.instance.currentUser();
     final String uid = user.uid.toString();
     return uid;
+  }
+
+  // if not working remove the Future<void>
+  Future<String> getUserKey() async {
+    final uid = await getCurrentUser();
+    DocumentSnapshot snapshot =
+        await Firestore.instance.collection('users').document(uid).get();
+    String userKey = snapshot.data['userKey'];
+    return userKey;
   }
 
   Stream<QuerySnapshot> getUsersPatientStreamSnapshots(
@@ -164,43 +174,169 @@ class _PatientsScreenState extends State<PatientsScreen> {
       ),
     );
   }
+
   Widget buildPatientCard(BuildContext context, DocumentSnapshot document) {
-  final patient = Patient.fromSnapshot(document);
+    final patient = Patient.fromSnapshot(document);
+
+    Future<String> _decryptName() async {
+      var userKey = await getUserKey();
+      String decryptText =
+          await FlutterAesEcbPkcs5.decryptString(patient.name, userKey);
+      return decryptText;
+    }
+
+    Future<String> _decryptGender() async {
+      var userKey = await getUserKey();
+      String decryptText =
+          await FlutterAesEcbPkcs5.decryptString(patient.gender, userKey);
+      return decryptText;
+    }
+
+    Future<String> _decryptAge() async {
+      var userKey = await getUserKey();
+      String decryptText =
+          await FlutterAesEcbPkcs5.decryptString(patient.age, userKey);
+      return decryptText;
+    }
+
+    Future<String> _decryptDOB() async {
+      var userKey = await getUserKey();
+      String decryptText =
+          await FlutterAesEcbPkcs5.decryptString(patient.dob, userKey);
+      return decryptText;
+    }
+
+    Future<String> _decryptNotes() async {
+      var userKey = await getUserKey();
+      String decryptText =
+          await FlutterAesEcbPkcs5.decryptString(patient.notes, userKey);
+      return decryptText;
+    }
+
     return new Container(
       child: Card(
         child: InkWell(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => EditPatient(patient: patient)));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditPatient(patient: patient)));
           },
-                  child: Padding(
+          child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
                   child: Row(children: <Widget>[
-                    Text(patient.name, style: new TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+                    FutureBuilder(
+                      future: _decryptName(),
+                      builder: (context, AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData)
+                          return Text(
+                            '${snapshot.data}',
+                            style: new TextStyle(
+                                fontSize: 24.0, fontWeight: FontWeight.bold),
+                          );
+                        if (snapshot.error)
+                          return Text(
+                            'Error getting the data.',
+                            style: new TextStyle(
+                                fontSize: 7.0, fontWeight: FontWeight.bold),
+                          );
+                        return const CircularProgressIndicator();
+                      },
+                    ),
                     Spacer(),
-                    Text(patient.gender, style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                    Text(", ", style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                    Text(patient.age, style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold))
+                    FutureBuilder(
+                      future: _decryptGender(),
+                      builder: (context, AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData)
+                          return Text(
+                            '${snapshot.data}',
+                            style: new TextStyle(
+                                fontSize: 20.0, fontWeight: FontWeight.bold),
+                          );
+                        if (snapshot.error)
+                          return Text(
+                            'error',
+                            style: new TextStyle(
+                                fontSize: 7.0, fontWeight: FontWeight.bold),
+                          );
+                        return const CircularProgressIndicator();
+                      },
+                    ),
+                    Text(", ",
+                        style: new TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.bold)),
+                    FutureBuilder(
+                      future: _decryptAge(),
+                      builder: (context, AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData)
+                          return Text(
+                            '${snapshot.data}',
+                            style: new TextStyle(
+                                fontSize: 20.0, fontWeight: FontWeight.bold),
+                          );
+                        if (snapshot.error)
+                          return Text(
+                            'error',
+                            style: new TextStyle(
+                                fontSize: 7.0, fontWeight: FontWeight.bold),
+                          );
+                        return const CircularProgressIndicator();
+                      },
+                    ),
                   ]),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 4.0, bottom: 80.0),
                   child: Row(children: <Widget>[
-                    Text(
-                        patient.dob, style: new TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                    FutureBuilder(
+                      future: _decryptDOB(),
+                      builder: (context, AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData)
+                          return Text(
+                            '${snapshot.data}',
+                            style: new TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          );
+                        if (snapshot.error)
+                          return Text(
+                            'error',
+                            style: new TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          );
+                        return const CircularProgressIndicator();
+                      },
+                    ),
                     Spacer(),
                   ]),
                 ),
-                   Row(
-                    children: <Widget>[
-                      Text(patient.notes, style: new TextStyle(fontSize: 16.0),),
-                      Spacer(),
-                      Icon(Icons.person),
-                    ],
-                  ),
+                Row(
+                  children: <Widget>[
+                    FutureBuilder(
+                      future: _decryptNotes(),
+                      builder: (context, AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData)
+                          return Text(
+                            '${snapshot.data}',
+                            style: new TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          );
+                        if (snapshot.error)
+                          return Text(
+                            'error',
+                            style: new TextStyle(
+                                fontSize: 7.0, fontWeight: FontWeight.bold),
+                          );
+                        return const CircularProgressIndicator();
+                      },
+                    ),
+                    Spacer(),
+                    Icon(Icons.person),
+                  ],
+                ),
               ],
             ),
           ),
@@ -208,5 +344,4 @@ class _PatientsScreenState extends State<PatientsScreen> {
       ),
     );
   }
-
 }

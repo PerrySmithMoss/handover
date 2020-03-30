@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 
 class AddPatient extends StatefulWidget {
   @override
@@ -18,10 +19,68 @@ class _AddPatientState extends State<AddPatient> {
   var _currentGenderSelected;
   List<String> _genders = <String>['Male', 'Female', 'Other'];
 
-  Future<String>getCurrentUser() async {
+  Future<String> getCurrentUser() async {
     final FirebaseUser user = await FirebaseAuth.instance.currentUser();
     final String uid = user.uid.toString();
     return uid;
+  }
+
+  Future<String> getUserKey() async {
+    final uid = await getCurrentUser();
+    DocumentSnapshot snapshot =
+        await Firestore.instance.collection('users').document(uid).get();
+    String userKey = snapshot.data['userKey'];
+    return userKey.toString();
+  }
+
+  // encrypting the patient's name
+  _encryptName() async {
+    
+    var userKey = await getUserKey();
+
+    final encryptedName =
+        await FlutterAesEcbPkcs5.encryptString(_name, userKey);
+    return encryptedName;
+  }
+
+  // encrypting the patient's age
+    _encryptAge() async {
+    
+    var userKey = await getUserKey();
+
+    final encryptedText =
+        await FlutterAesEcbPkcs5.encryptString(_age, userKey);
+    return encryptedText;
+  }
+
+  // encrypting the patient's D.O.B
+    _encryptDOB() async {
+    
+    var userKey = await getUserKey();
+
+    final encryptedText =
+        await FlutterAesEcbPkcs5.encryptString(_dob, userKey);
+    return encryptedText;
+  }
+
+  // encrypting the patient's gender
+    _encryptGender() async {
+    
+    var userKey = await getUserKey();
+
+    final encryptedText =
+        await FlutterAesEcbPkcs5.encryptString(_gender, userKey);
+    return encryptedText;
+  }
+
+  // encrypting the patient's notes
+    _encryptNotes() async {
+    
+    var userKey = await getUserKey();
+
+    final encryptedText =
+        await FlutterAesEcbPkcs5.encryptString(_notes, userKey);
+    return encryptedText;
   }
 
 // add user's patient to firebase
@@ -33,11 +92,11 @@ class _AddPatientState extends State<AddPatient> {
           .document(await getCurrentUser())
           .collection("Patients")
           .add({
-        'Patient name': _name,
-        'Age': _age,
-        'Date of Birth': _dob,
-        'Gender': _gender,
-        'Notes': _notes,
+        'Patient name': await _encryptName(),
+        'Age': await _encryptAge(),
+        'Date of Birth': await _encryptDOB(),
+        'Gender': await _encryptGender(),
+        'Notes': await _encryptNotes(),
         // "Timestamp": Timestamp.fromDate(DateTime.now())
       });
     }

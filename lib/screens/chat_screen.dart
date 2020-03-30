@@ -44,11 +44,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   ScrollController _listScrollController = ScrollController();
 
-  String receiverPhotoUrl,
-      senderPhotoUrl,
-      receiverName,
-      senderName,
-      profileImageUrl;
 
   ImageUploadProvider _imageUploadProvider;
 
@@ -63,29 +58,6 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isWriting = false;
 
   bool showEmojiPicker = false;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   print("RCID : ${widget.receiverUid}");
-  //   _repository.getCurrentUser().then((user) {
-  //     setState(() {
-  //       _senderuid = user.uid;
-  //     });
-  //     _repository.fetchUserDetailsById(_senderuid).then((user) {
-  //       setState(() {
-  //         senderPhotoUrl = user.profileImageUrl;
-  //         senderName = user.name;
-  //       });
-  //     });
-  //     _repository.fetchUserDetailsById(widget.receiverUid).then((user) {
-  //       setState(() {
-  //         receiverPhotoUrl = user.profileImageUrl;
-  //         receiverName = user.name;
-  //       });
-  //     });
-  //   });
-  // }
 
   @override
   void initState() {
