@@ -108,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
         flexibleSpace: FlexibleSpaceBar(
           centerTitle: true,
           title: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 42, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 29, 0, 0),
             child: Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

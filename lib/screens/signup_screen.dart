@@ -112,7 +112,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   Container(
         width: double.infinity,
-        height: ScreenUtil.getInstance().setHeight(550),
+        height: ScreenUtil.getInstance().setHeight(600),
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8.0),

@@ -97,7 +97,6 @@ class _AddPatientState extends State<AddPatient> {
         'Date of Birth': await _encryptDOB(),
         'Gender': await _encryptGender(),
         'Notes': await _encryptNotes(),
-        // "Timestamp": Timestamp.fromDate(DateTime.now())
       });
     }
     Navigator.pop(context);

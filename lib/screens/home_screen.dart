@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: _pageController,
         children: <Widget>[
           FeedScreen(currentUserId: currentUserId),
-          Encryption(),
+          // Encryption(),
           PatientsScreen(userId: currentUserId),
           SearchScreen(),
           CreatePostScreen(),
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
         activeColor: Colors.black,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home,size: 32)),
-          BottomNavigationBarItem(icon: Icon(Icons.enhanced_encryption,size: 32)),
+          // BottomNavigationBarItem(icon: Icon(Icons.enhanced_encryption,size: 32)),
           BottomNavigationBarItem(icon: Icon(Icons.list, size: 40)),
           BottomNavigationBarItem(icon: Icon(Icons.search, size: 32)),
           BottomNavigationBarItem(icon: Icon(Icons.photo_camera, size: 32)),

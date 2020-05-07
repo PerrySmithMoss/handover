@@ -10,7 +10,7 @@ class Encryption extends StatefulWidget {
 
 class _EncryptionState extends State<Encryption> {
 
-  String _name = "Perry Smith-Moss";
+  String _name = "This is an example!";
 
   // encrypting the patient data 
   _encrypt() async {
@@ -44,6 +44,29 @@ class _EncryptionState extends State<Encryption> {
     return userKey.toString();
   }
 
+  // Testing the AES 256-bit Encryption Algorithm
+  _encryptDecrypt() async {
+
+    // Sample test used for encryption process
+    String sampleText = 'This is an example...';
+    print("Sample text: " + sampleText);
+
+    //Generatng the encryption key
+    var key = await FlutterAesEcbPkcs5.generateDesKey(256);
+    String encryptionKey = key;
+    print("Encryption key: " + encryptionKey);
+
+    // encrypting the text
+    final encryptedText =
+        await FlutterAesEcbPkcs5.encryptString(sampleText, encryptionKey);
+      print("Encrypted text: " + encryptedText);
+
+    //decrypting the text
+    final decryptedText =
+        await FlutterAesEcbPkcs5.decryptString(encryptedText, encryptionKey);
+    print("Decrypted text: " + decryptedText);  
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,6 +84,12 @@ class _EncryptionState extends State<Encryption> {
             color: Colors.blue,
             onPressed: () {
               _decrypt();
+            },
+          ),
+          RaisedButton(
+            color: Colors.black,
+            onPressed: () {
+              _encryptDecrypt();
             },
           ),
       ],
