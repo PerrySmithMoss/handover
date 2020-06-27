@@ -23,6 +23,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       AuthService.signUpUser(context, _name, _email, _password, await _generateDESKey());
+      Navigator.pop(context);
     }
   }
 
@@ -112,7 +113,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   Container(
         width: double.infinity,
-        height: ScreenUtil.getInstance().setHeight(600),
+        height: ScreenUtil.getInstance().setHeight(630),
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8.0),
@@ -233,7 +234,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              onTap: _submit,
+                              onTap: () {
+                                showDialog(context: context, builder: (BuildContext context) => _buildAboutDialog(context));
+                              },
                               child: Center(
                                 child: Text("SignUp",
                                     style: TextStyle(
@@ -283,4 +286,30 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
+  Widget _buildAboutDialog(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('Privacy Policy'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("I agree to my data being stored")
+        ],
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Cancel'),
+        ),
+        FlatButton(
+          onPressed: _submit,
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Agree'),
+        ),
+      ],
+    );
+}
 }

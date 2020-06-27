@@ -17,17 +17,17 @@ class _EditPatientState extends State<EditPatient> {
   void initState() {
     super.initState();
       // add a timestamp controller, variable and textformfeild.
-      _nameController.text = widget.patient.name;
-      _dateController.text = widget.patient.dob;
-      _currentGenderSelected = widget.patient.gender;
-      _ageController.text = widget.patient.age;
-      _notesController.text = widget.patient.notes;
-      _name = widget.patient.name;
-      _age = widget.patient.age;
-      _dob = widget.patient.dob;
-      _gender = widget.patient.gender;
-      _currentGenderSelected = widget.patient.gender;
-      _notes = widget.patient.notes;
+      // _nameController.text = widget.patient.name;
+      // _dateController.text = widget.patient.dob;
+      // _currentGenderSelected = widget.patient.gender;
+      // _ageController.text = widget.patient.age;
+      // _notesController.text = widget.patient.notes;
+      // _name = widget.patient.name;
+      // _age = widget.patient.age;
+      // _dob = widget.patient.dob;
+      // _gender = widget.patient.gender;
+      // _currentGenderSelected = widget.patient.gender;
+      // _notes = widget.patient.notes;
       
   }
   final db = Firestore.instance;
@@ -87,7 +87,7 @@ class _EditPatientState extends State<EditPatient> {
                 child: TextFormField(
                   decoration: InputDecoration(
                     
-                    labelText: _name,
+                    labelText: "Name",
                     icon: Icon(Icons.person),
                   ),
                   validator: (input) =>
@@ -109,7 +109,7 @@ class _EditPatientState extends State<EditPatient> {
                       controller: _dateController,
                       keyboardType: TextInputType.datetime,
                       decoration: InputDecoration(
-                          hintText: _dob,
+                          hintText: "Date of Birth",
                           icon: Icon(
                             Icons.calendar_today,
                             size: 22,
@@ -125,8 +125,9 @@ class _EditPatientState extends State<EditPatient> {
                         ? 'Please enter a valid Gender'
                         : null,
                     onSaved: (input) => _gender = input,
+                    
                     decoration: InputDecoration(
-                        labelText: _gender,
+                        labelText: "Gender",
                         icon: Icon(Icons.person_add)),
                     items: _genders
                         .map((value) => DropdownMenuItem(
@@ -152,7 +153,7 @@ class _EditPatientState extends State<EditPatient> {
                   onSaved: (input) => _age = input,
                   controller: _ageController,
                   decoration: InputDecoration(
-                      labelText: _age,
+                      labelText: "Age",
                       icon: Icon(Icons.date_range)),
                 ),
               ),
@@ -163,7 +164,7 @@ class _EditPatientState extends State<EditPatient> {
                   onSaved: (input) => _notes = input,
                   controller: _notesController,
                   decoration: InputDecoration(
-                      labelText: _notes,
+                      labelText: "Notes",
                       icon: Icon(Icons.note_add)),
                 ),
               ),
